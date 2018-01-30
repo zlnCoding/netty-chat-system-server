@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -24,13 +26,13 @@ import java.util.Scanner;
  */
 public class Server {
     //用于接收client端的通信
-    static NioEventLoopGroup pGroup = null;
+    public static NioEventLoopGroup pGroup = null;
     //实际处理的管道
-    static NioEventLoopGroup wGroup = null;
-
-    static Scanner portScanner = null;
-
-    public static ArrayList<ChannelHandlerContext> arrayList = new ArrayList<>();
+    public static NioEventLoopGroup wGroup = null;
+    //接收port
+    public static Scanner portScanner = null;
+    //用于储存连接的channel
+    public static List<ChannelHandlerContext> arrayList = Collections.synchronizedList(new ArrayList<ChannelHandlerContext>());
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -61,18 +63,16 @@ public class Server {
             String port = portScanner.nextLine();
             String addr = InetAddress.getLocalHost().getHostAddress();
             //异步绑定端口号
-            ChannelFuture sync = bootstrap.bind(new InetSocketAddress(addr,Integer.parseInt(port))).sync();
-            System.out.println("服务端启动成功,绑定地址:"+addr+",绑定端口"+port);
+            ChannelFuture sync = bootstrap.bind(new InetSocketAddress(addr, Integer.parseInt(port))).sync();
+            System.out.println("服务端启动成功,绑定地址:" + addr + ",绑定端口" + port);
             //异步监听关闭事件
             sync.channel().closeFuture().sync();
 
             //关闭两个group
             pGroup.shutdownGracefully();
             wGroup.shutdownGracefully();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e);
         } finally {
             if (pGroup != null) {
                 pGroup.shutdownGracefully();

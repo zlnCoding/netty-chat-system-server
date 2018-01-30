@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 描述:
@@ -16,9 +16,9 @@ import java.util.ArrayList;
  */
 public class ServerHandle extends ChannelHandlerAdapter {
 
-    private ArrayList<ChannelHandlerContext> arrayList = null;
+    private List<ChannelHandlerContext> arrayList = null;
 
-    public ServerHandle(ArrayList<ChannelHandlerContext> arrayList) {
+    public ServerHandle(List<ChannelHandlerContext> arrayList) {
         this.arrayList = arrayList;
     }
 
@@ -33,6 +33,7 @@ public class ServerHandle extends ChannelHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        //将连接的channel添加到数组中
         arrayList.add(ctx);
     }
 
